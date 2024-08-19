@@ -1,0 +1,23 @@
+#translator-container select, 
+#translator-container textarea {
+    font-size: 1em;
+    padding: 0.5em;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+}
+
+#translationResult {
+    background-color: #f1f1f1;
+    color: #333;
+    resize: none;
+}
+
+#quickTranslateButton {
+    font-size: 1.5em;
+    color: #fff;
+    cursor: pointer;
+}
