@@ -71,3 +71,8 @@ Oczywiście! Oto pełna, sformatowana w Markdown instrukcja instalacji dla Twoje
    - The **QuickTranslate** button (🌐) will be added to your browser.
    - Click it to open the translation panel.
    - Enter the text, choose the languages, and view the translation results.
+  
+![image](https://github.com/user-attachments/assets/99deacc6-b7ba-4f9e-9335-c1957927602e)
+
+![image](https://github.com/user-attachments/assets/dc800673-2910-4f93-9b36-065617467ce0)
+
