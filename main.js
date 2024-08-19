@@ -1,95 +1,12 @@
+
 if (!document.getElementById('quickTranslateButton')) {
-    function savePosition(id, x, y) {
-        localStorage.setItem(id + '_pos', JSON.stringify({ x, y }));
-    }
 
-    function loadPosition(id) {
-        const pos = localStorage.getItem(id + '_pos');
-        return pos ? JSON.parse(pos) : null;
-    }
-
-    function adjustPosition(element) {
-        const rect = element.getBoundingClientRect();
-        const containerWidth = element.offsetWidth;
-        const containerHeight = element.offsetHeight;
-
-        if (rect.left < 0) {
-            applyStyles(element, { left: '0px' });
-        }
-        if (rect.top < 0) {
-            applyStyles(element, { top: '0px' });
-        }
-        if (rect.right > window.innerWidth) {
-            applyStyles(element, { left: `${window.innerWidth - containerWidth}px` });
-        }
-        if (rect.bottom > window.innerHeight) {
-            applyStyles(element, { top: `${window.innerHeight - containerHeight}px` });
-        }
-    }
-
-    function makeDraggable(element) {
-        let isDragging = false;
-        let startX, startY, initialX, initialY;
-
-        element.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            initialX = parseInt(element.style.left || 0, 10);
-            initialY = parseInt(element.style.top || 0, 10);
-            document.body.style.userSelect = 'none';
-            applyStyles(element, { transition: 'none' });
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-
-        function onMouseMove(e) {
-            if (!isDragging) return;
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-            const newLeft = Math.max(0, Math.min(initialX + deltaX, window.innerWidth - element.offsetWidth));
-            const newTop = Math.max(0, Math.min(initialY + deltaY, window.innerHeight - element.offsetHeight));
-
-            applyStyles(element, {
-                left: `${newLeft}px`,
-                top: `${newTop}px`
-            });
-        }
-
-        function onMouseUp() {
-            isDragging = false;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-            document.body.style.userSelect = '';
-            savePosition(element.id, element.style.left, element.style.top);
-            applyStyles(element, { transition: 'all 0.3s ease-in-out' });
-        }
-    }
-
-    const qTB = document.createElement('div');
-    qTB.id = 'quickTranslateButton';
-    qTB.textContent = '🌐';
-    applyStyles(qTB, {
-        position: 'fixed',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: '1.5em',
-        width: '2.5em',
-        height: '2.5em',
-        borderRadius: '50%',
-        backgroundColor: '#007bff',
-        border: '1px solid #ffffff',
-        color: 'white',
-        zIndex: '10000',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease-in-out',
-        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-    });
+    const qTB = component_qTB();
 
     const qTBPos = loadPosition('quickTranslateButton');
+    
     if (qTBPos) {
-        applyStyles(qTB, { left: qTBPos.x, top: qTBPos.y });
+        applyStyles(qTB, { top: qTBPos.y, left: qTBPos.x });
     } else {
         applyStyles(qTB, { top: '1em', right: '1em' });
     }
@@ -105,24 +22,11 @@ if (!document.getElementById('quickTranslateButton')) {
     });
 
     function createContextMenu() {
-        const menu = document.createElement('div');
-        menu.id = 'contextMenu';
-        applyStyles(menu, {
-            position: 'absolute',
-            backgroundColor: '#ffffff',
-            border: '1px solid #ccc',
-            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-            borderRadius: '4px',
-            display: 'none',
-            zIndex: '10001'
-        });
 
-        const resetItem = document.createElement('div');
-        resetItem.textContent = 'Reset Position';
-        applyStyles(resetItem, {
-            padding: '10px',
-            cursor: 'pointer',
-        });
+        const menu = component_menu();
+
+        const resetItem = component_resetItem();
+
         resetItem.addEventListener('click', () => {
             const defaultPos = { top: '1em', right: '1em' };
             applyStyles(qTB, defaultPos);
@@ -133,12 +37,9 @@ if (!document.getElementById('quickTranslateButton')) {
         });
         menu.appendChild(resetItem);
 
-        const colorPicker = document.createElement('div');
-        colorPicker.textContent = 'Change Color';
-        applyStyles(colorPicker, {
-            padding: '10px',
-            cursor: 'pointer',
-        });
+
+        const colorPicker = component_colorPicker();
+
         colorPicker.addEventListener('click', () => {
             const color = prompt('Enter a color code or name (e.g., #ff0000 or red):');
             if (color) {
@@ -148,23 +49,15 @@ if (!document.getElementById('quickTranslateButton')) {
         });
         menu.appendChild(colorPicker);
 
-        const refreshItem = document.createElement('div');
-        refreshItem.textContent = 'Refresh';
-        applyStyles(refreshItem, {
-            padding: '10px',
-            cursor: 'pointer',
-        });
+        const refreshItem = component_refreshItem();
+        
         refreshItem.addEventListener('click', () => {
             location.reload();
         });
         menu.appendChild(refreshItem);
 
-        const closeItem = document.createElement('div');
-        closeItem.textContent = 'Close';
-        applyStyles(closeItem, {
-            padding: '10px',
-            cursor: 'pointer',
-        });
+        const closeItem = component_closeItem();
+
         closeItem.addEventListener('click', () => {
             qTB.style.display = 'none';
             container.style.display = 'none';
@@ -205,27 +98,9 @@ if (!document.getElementById('quickTranslateButton')) {
     document.body.appendChild(qTB);
     makeDraggable(qTB);
 
-    const container = document.createElement('div');
+    const container = component_container();
+
     container.id = 'translator-container';
-    applyStyles(container, {
-        position: 'fixed',
-        display: 'none',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '20em',
-        backgroundColor: '#ffffff',
-        border: '1px solid #ccc',
-        padding: '1em',
-        zIndex: '10000',
-        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-        borderRadius: '8px',
-        opacity: '0',
-        transform: 'translateY(-20px)',
-        transition: 'all 0.3s ease-in-out',
-        maxHeight: '80vh',
-        overflow: 'auto'
-    });
 
     const containerPos = loadPosition('translator-container');
     if (containerPos) {
@@ -246,24 +121,10 @@ if (!document.getElementById('quickTranslateButton')) {
     makeDraggable(container);
 
     function createCustomSelect(id, languages, selectedValue) {
-        const selectContainer = document.createElement('div');
-        applyStyles(selectContainer, {
-            position: 'relative',
-            width: '100%',
-            marginTop: '10px'
-        });
+        const selectContainer = component_selectContainer();
 
-        const select = document.createElement('select');
+        const select = component_select();
         select.id = id;
-        applyStyles(select, {
-            width: '100%',
-            padding: '0.5em',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            boxSizing: 'border-box',
-            appearance: 'none',
-            cursor: 'pointer'
-        });
 
         for (const code in languages) {
             const option = document.createElement('option');
@@ -271,19 +132,10 @@ if (!document.getElementById('quickTranslateButton')) {
             option.text = languages[code];
             select.appendChild(option);
         }
+
         select.value = selectedValue;
 
-        const arrow = document.createElement('div');
-        applyStyles(arrow, {
-            position: 'absolute',
-            right: '10px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            pointerEvents: 'none',
-            fontSize: '0.8em',
-            color: '#555'
-        });
-        arrow.textContent = '▼';
+        const arrow = component_arrow();
 
         selectContainer.appendChild(select);
         selectContainer.appendChild(arrow);
@@ -291,53 +143,22 @@ if (!document.getElementById('quickTranslateButton')) {
         return selectContainer;
     }
 
-    const languages = {
-        'pl': 'Polish',
-        'en': 'English',
-        'es': 'Spanish',
-        'de': 'German',
-        'fr': 'French',
-        'it': 'Italian',
-        'ru': 'Russian',
-        'zh': 'Chinese',
-        'ja': 'Japanese'
-    };
+    languages = getLanguages;
 
     const firstLanguageFieldContainer = createCustomSelect('firstLanguageField', languages, 'pl');
     const secondLanguageFieldContainer = createCustomSelect('secondLanguageField', languages, 'en');
 
-    const input = document.createElement('textarea');
+    const input = component_input();
     input.id = 'word';
-    applyStyles(input, {
-        width: '100%',
-        height: '50px',
-        marginTop: '10px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        padding: '0.5em',
-        boxSizing: 'border-box',
-        resize: 'vertical',
-        maxHeight: '200px'
-    });
+
 
     input.autofocus = true;
 
-    const result = document.createElement('textarea');
+    const result = component_result();
+
     result.id = 'translationResult';
+
     result.readOnly = true;
-    applyStyles(result, {
-        width: '100%',
-        height: '50px',
-        marginTop: '10px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-        padding: '0.5em',
-        boxSizing: 'border-box',
-        backgroundColor: '#f1f1f1',
-        color: '#000000',
-        resize: 'vertical',
-        maxHeight: '200px'
-    });
 
     function translate() {
         const word = input.value;
@@ -363,7 +184,7 @@ if (!document.getElementById('quickTranslateButton')) {
 
     input.addEventListener('input', () => {
         clearTimeout(input._timeout);
-        input._timeout = setTimeout(translate, 200);
+        input._timeout = setTimeout(translate, 0);
     });
 
     firstLanguageFieldContainer.querySelector('select').addEventListener('change', translate);
